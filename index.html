@@ -47,5 +47,103 @@
 </div>
 <div id="job-container" class="space-y-4"></div>
 </main>
+<script>
+const defaultJobs = [
+{ id:1, company:"Mobile First Corp", role:"React Native Developer", loc:"Remote", type:"Full-time", salary:"$130k - $175k", desc:"Build cross-platform mobile apps.", status:"not-applied"},
+{ id:2, company:"WebFlow Agency", role:"Web Designer", loc:"Los Angeles", type:"Part-time", salary:"$80k - $120k", desc:"Create stunning web experiences.", status:"not-applied"},
+{ id:3, company:"DataViz Solutions", role:"Data Visualization Specialist", loc:"Boston", type:"Full-time", salary:"$125k - $165k", desc:"Turn data into charts.", status:"not-applied"},
+{ id:4, company:"CloudFirst Inc", role:"Backend Developer", loc:"Seattle", type:"Full-time", salary:"$140k - $190k", desc:"Design scalable backend.", status:"not-applied"},
+{ id:5, company:"Innovation Labs", role:"UI/UX Engineer", loc:"Austin", type:"Full-time", salary:"$110k - $150k", desc:"Build user interfaces.", status:"not-applied"},
+{ id:6, company:"MegaCorp Solutions", role:"JavaScript Developer", loc:"New York", type:"Contract", salary:"$90k - $140k", desc:"Develop enterprise apps.", status:"not-applied"},
+{ id:7, company:"Cyber Shield", role:"Security Engineer", loc:"Remote", type:"Full-time", salary:"$150k - $200k", desc:"Secure infrastructure.", status:"not-applied"},
+{ id:8, company:"NextGen AI", role:"Frontend Developer", loc:"Remote", type:"Full-time", salary:"$120k - $160k", desc:"Build modern UI using React & Tailwind.", status:"not-applied"}
+];
+
+let savedJobs = JSON.parse(localStorage.getItem("jobs"));
+let jobs = (!savedJobs || savedJobs.length < 8) ? defaultJobs : savedJobs;
+
+let currentTab = "all";
+
+function saveJobs(){
+localStorage.setItem("jobs", JSON.stringify(jobs));
+}
+
+function render(){
+
+const container = document.getElementById("job-container");
+
+const filtered = jobs.filter(j => currentTab==="all" ? true : j.status===currentTab);
+
+document.getElementById("total-count").innerText = jobs.length;
+document.getElementById("interview-count").innerText = jobs.filter(j=>j.status==="interview").length;
+document.getElementById("rejected-count").innerText = jobs.filter(j=>j.status==="rejected").length;
+
+document.getElementById("section-count").innerText =
+currentTab==="all"
+? `${filtered.length} jobs`
+: `${filtered.length} of ${jobs.length} jobs`;
+
+if(filtered.length===0){
+container.innerHTML = `
+<div class="flex flex-col items-center justify-center py-16 bg-white rounded-xl border-2 border-dashed">
+    <img src="jobs.png" class="w-32 sm:w-40 mb-4">
+<h3 class="text-xl font-bold text-slate-600">No jobs available</h3>
+<p class="text-slate-400">Check back soon for new job opportunities</p>
+</div>`;
+return;
+}
+
+container.innerHTML = filtered.map(job=>{
+
+let badgeStyle="bg-[#EEF4FF] text-[#002C5C]";
+let badgeText="NOT APPLIED";
+
+if(job.status==="interview"){badgeStyle="bg-emerald-100 text-emerald-700";badgeText="INTERVIEW";}
+if(job.status==="rejected"){badgeStyle="bg-rose-100 text-rose-700";badgeText="REJECTED";}
+
+return `
+<div class="bg-white p-5 rounded-xl shadow-sm border relative">
+
+<button onclick="deleteJob(${job.id})"
+class="absolute top-4 right-4 text-slate-300 hover:text-rose-500">
+<i class="fa-solid fa-trash-can"></i>
+</button>
+
+<h4 class="font-bold text-lg" style="color:#002C5C;">${job.company}</h4>
+<p class="font-medium mb-2" style="color:#002C5C;">${job.role}</p>
+
+<div class="flex flex-wrap gap-4 text-sm mb-3" style="color:#002C5C;">
+<span><i class="fa-solid fa-location-dot mr-1"></i>${job.loc}</span>
+<span><i class="fa-solid fa-clock mr-1"></i>${job.type}</span>
+<span><i class="fa-solid fa-circle-dollar-to-slot mr-1"></i>${job.salary}</span>
+</div>
+
+<div class="inline-block mb-3 px-3 py-1 rounded font-bold text-xs uppercase ${badgeStyle}">
+${badgeText}
+</div>
+
+<p class="text-slate-600 text-sm mb-4">${job.desc}</p>
+
+<div class="flex gap-3">
+<button onclick="updateStatus(${job.id},'interview')"
+class="px-5 py-2 rounded-lg border-2 border-emerald-500 font-bold
+${job.status==='interview'?'bg-emerald-500 text-white':'text-emerald-600'}">
+INTERVIEW
+</button>
+
+<button onclick="updateStatus(${job.id},'rejected')"
+class="px-5 py-2 rounded-lg border-2 border-rose-500 font-bold
+${job.status==='rejected'?'bg-rose-500 text-white':'text-rose-600'}">
+REJECTED
+</button>
+</div>
+
+</div>`;
+}).join("");
+
+saveJobs();
+}
+</script>
+
 </body>
 </html>
