@@ -144,6 +144,32 @@ REJECTED
 saveJobs();
 }
 </script>
+<script>
+function deleteJob(id){
+jobs = jobs.filter(j=>j.id!==id);
+render();
+}
 
+function updateStatus(id,status){
+jobs = jobs.map(j=>j.id===id?{...j,status}:j);
+render();
+}
+
+function filterTab(tab){
+currentTab=tab;
+
+document.querySelectorAll("[id^='tab-']").forEach(btn=>{
+btn.classList.remove("bg-blue-500","text-white");
+btn.classList.add("bg-white","text-slate-700");
+});
+
+document.getElementById(`tab-${tab}`).classList.add("bg-blue-500","text-white");
+document.getElementById(`tab-${tab}`).classList.remove("bg-white","text-slate-700");
+
+render();
+}
+
+render();
+</script>
 </body>
 </html>
